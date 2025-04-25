@@ -4,3 +4,7 @@
 # notebooks for experimentation
 notebooks/explore_transforms.ipynb
 notebooks/explore_balancing.ipynb
+
+# python bytecode
+__pycache__/
+*.pyc
