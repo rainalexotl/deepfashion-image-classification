@@ -8,6 +8,7 @@ from torchvision import datasets
 from src.data.sampler_utils import downsample_by_class
 
 ROOT = Path(__file__).resolve().parents[2]
+DATA_ROOT = 'data/split'
 MAX_SAMPLES_PER_CLASS = 320
 
 class CustomImageDataset(Dataset):
@@ -29,9 +30,9 @@ class CustomImageDataset(Dataset):
         return image, label
     
 def build_custom_dataset(split_type, transform=None, max_samples_per_class=MAX_SAMPLES_PER_CLASS):
-    data = datasets.ImageFolder(os.path.join(ROOT, split_type))
+    data = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, split_type))
     classes = data.classes
 
-    samples = downsample_by_class(data.imgs, MAX_SAMPLES_PER_CLASS)
+    samples = downsample_by_class(data.imgs, max_samples_per_class)
 
     return CustomImageDataset(samples, classes, transform)

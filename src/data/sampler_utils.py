@@ -37,7 +37,7 @@ def build_weighted_sampler(samples, max_samples_per_class=MAX_SAMPLES_PER_CLASS)
 
     sampler = WeightedRandomSampler(
         weights=sample_weights,
-        num_samples=len(class_counts) * MAX_SAMPLES_PER_CLASS,
+        num_samples=len(class_counts) * max_samples_per_class,
         replacement=True
     )
 
