@@ -24,7 +24,8 @@ python3 train.py --config <filename>.yaml
 ```
 
 ## Training a new model - Workflow
-What You Want to Do | What to Do
-New architecture | Define a new model in src/models/, register it in `factory.py`, create a new config YAML file pointing to it. Make sure to place it into `configs`
-New hyperparameters (only) | Create a new config YAML (or edit an existing one) with different values (like learning rate, batch size, epochs, etc.).
-Run experiment | Launch with a simple command: python train.py --config my_new_experiment.yaml
+| What You Want to Do | What to Do |
+| ---- | ---- |
+| New architecture | Define a new model in src/models/, register it in `factory.py`, create a new config YAML file pointing to it. Make sure to place it into `configs` |
+| New hyperparameters (only) | Create a new config YAML (or edit an existing one) with different values (like learning rate, batch size, epochs, etc.). |
+| Run experiment | Launch with a simple command: python train.py --config my_new_experiment.yaml |
