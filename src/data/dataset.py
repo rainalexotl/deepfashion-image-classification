@@ -2,10 +2,11 @@ import os
 from pathlib import Path
 
 from PIL import Image
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets
+import torchvision.transforms.v2 as T
 
-from src.data.sampler_utils import downsample_by_class
+from src.data.sampler_utils import downsample_by_class, build_weighted_sampler
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA_ROOT = 'data/split'
@@ -36,3 +37,30 @@ def build_custom_dataset(split_type, transform=None, max_samples_per_class=MAX_S
     samples = downsample_by_class(data.imgs, max_samples_per_class)
 
     return CustomImageDataset(samples, classes, transform)
+
+# def get_dataloaders(train=True):
+def get_dataloaders(config):
+    """
+    Args:
+        train (boolean): 
+
+    Returns:
+        train and val dataloaders if train=True, test dataloader if train=False
+    """
+    transform = T.Compose([
+        T.Resize(config['data']['img_size']),
+        T.CenterCrop(config['data']['img_size']),
+        T.RandomHorizontalFlip(),
+        T.ColorJitter(brightness=(0.8, 1.2), contrast=(0.8, 1.2), saturation=(0.8, 1.2), hue=(-0.1,0.1)),
+        T.RandomRotation(20),
+        T.GaussianBlur(kernel_size=3),
+        T.ToTensor()
+    ])
+    
+    train_dataset = build_custom_dataset('train', transform=transform)
+    sampler = build_weighted_sampler(train_dataset.samples)
+    val_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'val'), transform=transform)
+    train_loader = DataLoader(train_dataset, batch_size=config['train']['batch_size'], sampler=sampler)
+    val_loader = DataLoader(val_dataset, batch_size=config['train']['batch_size'], shuffle=False)
+
+    return train_loader, val_loader
