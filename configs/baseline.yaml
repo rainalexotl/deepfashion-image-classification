@@ -1,11 +1,15 @@
 model:
-    type: resnet
-    name: resnet18
-    pretrained: true
-    num_classes: 50
+    name: baseline
+    num_classes: 45
 
 train:
-    epochs: 20
+    epochs: 5
     batch_size: 32
     lr: 0.001
+    optimizer: 'adam'
     save_dir: experiments/baseline/
+
+data:
+    # instead of width and height. smaller side will be reduced
+    img_size: 210
+    
