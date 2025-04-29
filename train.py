@@ -31,6 +31,7 @@ def main():
     except KeyboardInterrupt:
         checkpoint_path = os.path.join(config['train']['save_dir'], 'checkpoints', 'latest_model.pt')
         print(f"Training Interrupted. Saving checkpoint to {checkpoint_path}")
+        trainer.curr_epoch -= 1 # to restart back at interrupted epoch
         trainer.save_checkpoint(checkpoint_path)
         trainer.logger.save()
         print(f"Checkpoint saved to {checkpoint_path}. Exiting gracefully.")

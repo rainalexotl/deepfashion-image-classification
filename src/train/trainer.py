@@ -91,6 +91,7 @@ class Trainer():
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.logger.history = checkpoint['history']
+        self.best_val_loss = min(checkpoint['history']['val_loss'])
 
     def save_checkpoint(self, path):
         torch.save({
