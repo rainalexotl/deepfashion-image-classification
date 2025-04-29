@@ -1,0 +1,14 @@
+model:
+    name: baseline
+    num_classes: 45
+
+train:
+    epochs: 5
+    batch_size: 32
+    lr: 0.001
+    save_dir: experiments/baseline/
+
+data:
+    # instead of width and height. smaller side will be reduced
+    img_size: 210
+    
