@@ -26,7 +26,14 @@ def main():
         return
     
     trainer = Trainer(config, checkpoint_path=args.checkpoint)
-    trainer.train()
+    try:
+        trainer.train()
+    except KeyboardInterrupt:
+        checkpoint_path = os.path.join(config['train']['save_dir'], 'checkpoints', 'latest_model.pt')
+        print(f"Training Interrupted. Saving checkpoint to {checkpoint_path}")
+        trainer.save_checkpoint(checkpoint_path)
+        trainer.logger.save()
+        print(f"Checkpoint saved to {checkpoint_path}. Exiting gracefully.")
 
 
 if __name__ == '__main__':

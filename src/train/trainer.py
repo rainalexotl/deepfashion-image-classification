@@ -35,6 +35,7 @@ class Trainer():
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config['train']['lr'])
 
         self.start_epoch = 0 # for checkpointing
+        self.curr_epoch = self.start_epoch # for saving in case of keyboard interrupt
         self.best_val_loss = float('inf')
         if checkpoint_path:
             self._load_checkpoint(checkpoint_path)
@@ -42,6 +43,7 @@ class Trainer():
     def train(self):
         for e in range(self.start_epoch, self.config['train']['epochs']): # start_epoch in case of checkpoints
             print(f"Epoch {e:3}... ", end='', flush=True)
+            self.curr_epoch = e
 
             train_epoch_loss = 0
             val_epoch_loss = 0
@@ -71,15 +73,13 @@ class Trainer():
             if val_epoch_loss < self.best_val_loss:
                 print(f"Saving new best model at epoch {e}")
                 self.save_checkpoint(
-                    os.path.join(ROOT, self.save_dir, 'checkpoints', 'best_model.pt'),
-                    e, train_epoch_loss, val_epoch_loss
+                    os.path.join(ROOT, self.save_dir, 'checkpoints', 'best_model.pt')
                 )
                 self.best_val_loss = val_epoch_loss
 
         # save last checkpoint
         self.save_checkpoint(
-            os.path.join(ROOT, self.save_dir, 'checkpoints', 'last_model.pt'),
-            e, train_epoch_loss, val_epoch_loss
+            os.path.join(ROOT, self.save_dir, 'checkpoints', 'last_model.pt')
         )
         
         self.logger.save()
@@ -92,9 +92,9 @@ class Trainer():
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.logger.history = checkpoint['history']
 
-    def save_checkpoint(self, path, epoch):
+    def save_checkpoint(self, path):
         torch.save({
-            'epoch': epoch + 1,
+            'epoch': self.curr_epoch + 1,
             'model_state_dict': self.model.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
             'history': self.logger.history
