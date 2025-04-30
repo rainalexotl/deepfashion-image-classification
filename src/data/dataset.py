@@ -60,6 +60,8 @@ def get_dataloaders(config, train=True):
         train and val dataloaders if train=True, test dataloader if train=False
     """
     
+    transform = get_transform(config)
+
     try:
         if train:
             train_dataset = build_custom_dataset('train', transform=transform)
