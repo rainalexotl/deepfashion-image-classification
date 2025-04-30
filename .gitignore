@@ -1,5 +1,6 @@
 .DS_Store
 */.DS_Store
+testimg.webp
 
 # notebooks for experimentation
 notebooks/explore_transforms.ipynb

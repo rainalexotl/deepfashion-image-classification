@@ -38,14 +38,7 @@ def build_custom_dataset(split_type, transform=None, max_samples_per_class=MAX_S
 
     return CustomImageDataset(samples, classes, transform)
 
-def get_dataloaders(config, train=True):
-    """
-    Args:
-        train (boolean): 
-
-    Returns:
-        train and val dataloaders if train=True, test dataloader if train=False
-    """
+def get_transform(config):
     transform = T.Compose([
         T.Resize(config['data']['img_size']),
         T.CenterCrop(config['data']['img_size']),
@@ -55,6 +48,17 @@ def get_dataloaders(config, train=True):
         T.GaussianBlur(kernel_size=3),
         T.ToTensor()
     ])
+
+    return transform
+
+def get_dataloaders(config, train=True):
+    """
+    Args:
+        train (boolean): 
+
+    Returns:
+        train and val dataloaders if train=True, test dataloader if train=False
+    """
     
     try:
         if train:
