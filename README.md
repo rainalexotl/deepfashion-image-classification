@@ -25,7 +25,7 @@ python3 src/data/organize_dataset.py
 
 ## Training a model
 ```
-python3 train.py --config <filename>.yaml
+python3 train.py --config config_filename.yaml
 ```
 
 ## Training a new model - Workflow
@@ -38,8 +38,15 @@ python3 train.py --config <filename>.yaml
 ## Continue training from checkpoint
 Create new config (if necessary) and run the following
 ```
-python3 train.py --config <new_config.yaml> --checkpoint <path_to_checkpoint_file.pt>
+python3 train.py --config new_config_file.yaml --checkpoint path/to/checkpoint.pt
 
 # example
 python3 train.py --config baseline_epochs20.yaml --checkpoint experiments/baseline/checkpoints/last_model.pt
 ```
+
+## Evaluating a model
+Make sure that the config file and checkpoint file align. It will most likely be whichever config file was used to train the model at checkpoint.
+```
+python3 eval.py --config config_filename.yaml --checkpoint path/to/checkpoint.pt [-s]
+```
+Add `-s` to save evaluation results. This will save the classification report to a json and the predictions (true vs pred) as a csv in `experiments/experiment_name/predictions/`
