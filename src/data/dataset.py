@@ -38,8 +38,7 @@ def build_custom_dataset(split_type, transform=None, max_samples_per_class=MAX_S
 
     return CustomImageDataset(samples, classes, transform)
 
-# def get_dataloaders(train=True):
-def get_dataloaders(config):
+def get_dataloaders(config, train=True):
     """
     Args:
         train (boolean): 
@@ -57,10 +56,20 @@ def get_dataloaders(config):
         T.ToTensor()
     ])
     
-    train_dataset = build_custom_dataset('train', transform=transform)
-    sampler = build_weighted_sampler(train_dataset.samples)
-    val_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'val'), transform=transform)
-    train_loader = DataLoader(train_dataset, batch_size=config['train']['batch_size'], sampler=sampler)
-    val_loader = DataLoader(val_dataset, batch_size=config['train']['batch_size'], shuffle=False)
+    try:
+        if train:
+            train_dataset = build_custom_dataset('train', transform=transform)
+            sampler = build_weighted_sampler(train_dataset.samples)
+            val_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'val'), transform=transform)
+            train_loader = DataLoader(train_dataset, batch_size=config['train']['batch_size'], sampler=sampler)
+            val_loader = DataLoader(val_dataset, batch_size=config['train']['batch_size'], shuffle=False)
+        
+            return train_loader, val_loader
+        else:
+            test_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'test'), transform=transform)
+            test_loader = DataLoader(test_dataset, batch_size=config['train']['batch_size'], shuffle=False)
 
-    return train_loader, val_loader
+            return test_loader
+    except Exception as e:
+        print(e)
+        return
