@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import shutil
-import pandas as pd
+from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -23,7 +23,7 @@ class Trainer():
         os.makedirs(os.path.join(ROOT, self.save_dir, 'checkpoints'), exist_ok=True)
         os.makedirs(os.path.join(ROOT, self.save_dir, 'logs'), exist_ok=True)
         shutil.copy(
-            os.path.join(ROOT, 'configs', f"{config['model']['name']}.yaml"), 
+            os.path.join(ROOT, 'configs', f"{config['model']['experiment_name']}.yaml"), 
             os.path.join(ROOT, self.save_dir, 'config.yaml')
         )
 
@@ -31,8 +31,13 @@ class Trainer():
         self.model = get_model(config)
         self.train_loader, self.val_loader = get_dataloaders(config)
 
+        param_group = config['train'].get('param_group')
+        if param_group:
+            model_params = self._resolve_model_param_group(self.model, param_group).parameters()
+        else:
+            model_params = self.model.parameters()
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=config['train']['lr'])
+        self.optimizer = torch.optim.Adam(model_params, lr=config['train']['lr'])
 
         self.start_epoch = 0 # for checkpointing
         self.curr_epoch = self.start_epoch # for saving in case of keyboard interrupt
@@ -42,13 +47,13 @@ class Trainer():
 
     def train(self):
         for e in range(self.start_epoch, self.config['train']['epochs']): # start_epoch in case of checkpoints
-            print(f"Epoch {e:3}... ", end='', flush=True)
+            # print(f"Epoch {e:3}... ", end='', flush=True)
             self.curr_epoch = e
 
             train_epoch_loss = 0
             val_epoch_loss = 0
 
-            for X_train, y_train in self.train_loader:
+            for X_train, y_train in tqdm(self.train_loader, desc='Training', leave=False):
                 # X_train, y_train = X_train.to(self.device), y_train.to(self.device)
                 train_preds = self.model(X_train)
                 loss_train = self.criterion(train_preds, y_train)
@@ -59,16 +64,16 @@ class Trainer():
                 self.optimizer.step()
 
             with torch.no_grad():
-                for X_val, y_val in self.val_loader:
+                for X_val, y_val in tqdm(self.val_loader, desc='Validation', leave=False):
                     # X_val, y_val = X_val.to(self.device), y_val.to(self.device)
                     val_preds = self.model(X_val)
                     loss_val = self.criterion(val_preds, y_val)
                     val_epoch_loss += loss_val.item()
 
             train_epoch_loss /= len(self.train_loader)
-            val_epoch_loss /= len(self.train_loader)
+            val_epoch_loss /= len(self.val_loader)
             self.logger.log(train_epoch_loss, val_epoch_loss)
-            print(f"Train loss: {train_epoch_loss}\tVal loss: {val_epoch_loss}")
+            print(f"Epoch {e:3} Train loss: {train_epoch_loss}\tVal loss: {val_epoch_loss}")
 
             if val_epoch_loss < self.best_val_loss:
                 print(f"Saving new best model at epoch {e}")
@@ -83,6 +88,12 @@ class Trainer():
         )
         
         self.logger.save()
+
+    def _resolve_model_param_group(self, obj, target_params):
+        for attr in target_params.split('.'):
+            obj = getattr(obj, attr) if not attr.isdigit() else obj[int(attr)]
+        return obj
+
 
     def _load_checkpoint(self, path):
         print(f"Loading checkpoint from {path}")
