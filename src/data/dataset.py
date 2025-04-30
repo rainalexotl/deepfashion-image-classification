@@ -38,8 +38,9 @@ def build_custom_dataset(split_type, transform=None, max_samples_per_class=MAX_S
 
     return CustomImageDataset(samples, classes, transform)
 
-def get_transform(config):
-    transform = T.Compose([
+def get_transforms(config):
+
+    train_transform = T.Compose([
         T.Resize(config['data']['img_size']),
         T.CenterCrop(config['data']['img_size']),
         T.RandomHorizontalFlip(),
@@ -49,7 +50,22 @@ def get_transform(config):
         T.ToTensor()
     ])
 
-    return transform
+    val_transform = T.Compose([
+        T.Resize(config['data']['img_size']),
+        T.CenterCrop(config['data']['img_size']),
+        T.ToTensor()
+    ])
+
+    if (config['model']['name'] == 'alexnet') or (config['model']['name'] == 'resnet34'):
+        train_transform = T.Compose(train_transform.transforms + 
+                              [T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+                              )
+        
+        val_transform = T.Compose(val_transform.transforms + 
+                              [T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+                              )
+
+    return train_transform, val_transform
 
 def get_dataloaders(config, train=True):
     """
@@ -59,20 +75,19 @@ def get_dataloaders(config, train=True):
     Returns:
         train and val dataloaders if train=True, test dataloader if train=False
     """
-    
-    transform = get_transform(config)
+    train_transform, val_transform = get_transforms(config)
 
     try:
         if train:
-            train_dataset = build_custom_dataset('train', transform=transform)
+            train_dataset = build_custom_dataset('train', transform=train_transform)
             sampler = build_weighted_sampler(train_dataset.samples)
-            val_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'val'), transform=transform)
+            val_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'val'), transform=val_transform)
             train_loader = DataLoader(train_dataset, batch_size=config['train']['batch_size'], sampler=sampler)
             val_loader = DataLoader(val_dataset, batch_size=config['train']['batch_size'], shuffle=False)
         
             return train_loader, val_loader
         else:
-            test_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'test'), transform=transform)
+            test_dataset = datasets.ImageFolder(os.path.join(ROOT, DATA_ROOT, 'test'), transform=val_transform)
             test_loader = DataLoader(test_dataset, batch_size=config['train']['batch_size'], shuffle=False)
 
             return test_loader
