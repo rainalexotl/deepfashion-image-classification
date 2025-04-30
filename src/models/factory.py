@@ -1,7 +1,6 @@
 import torch.nn as nn
 
 from torchvision import models
-from torchvision.models import AlexNet_Weights
 from src.models.baseline import BaselineCNN
 
 def get_model(config):
@@ -12,7 +11,7 @@ def get_model(config):
     if model_name == 'baseline':
         return BaselineCNN(num_classes)
     elif model_name == 'alexnet':
-        AlexNetModel = models.alexnet(weights=(AlexNet_Weights.DEFAULT if pretrained else None))
+        AlexNetModel = models.alexnet(weights=('DEFAULT' if pretrained else None))
         for param in AlexNetModel.parameters():
             param.requires_grad = False
 
@@ -27,5 +26,16 @@ def get_model(config):
             param.requires_grad = True
 
         return AlexNetModel
+    elif model_name == 'resnet34':
+        ResNet34Model = models.resnet34(weights=('DEFAULT' if pretrained else None))
+        for param in ResNet34Model.parameters():
+            param.requires_grad = False
+        
+        ResNet34Model.fc = nn.Linear(512, num_classes)
+
+        for param in ResNet34Model.fc.parameters():
+            param.requires_grad = True
+
+        return ResNet34Model
     else:
         raise ValueError(f"Unknown model: {model_name}")
