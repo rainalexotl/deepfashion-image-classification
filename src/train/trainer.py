@@ -37,9 +37,12 @@ class Trainer():
         else:
             model_params = self.model.parameters()
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(model_params, lr=config['train']['lr'])
+        weight_decay = config['train'].get('weight_decay', 0)
+        self.optimizer = torch.optim.Adam(model_params, lr=config['train']['lr'], 
+                                          weight_decay=weight_decay)
 
-        self.start_epoch = 0 # for checkpointing
+        # for checkpointing
+        self.start_epoch = 0
         self.curr_epoch = self.start_epoch # for saving in case of keyboard interrupt
         self.best_val_loss = float('inf')
         if checkpoint_path:
@@ -53,7 +56,7 @@ class Trainer():
             train_epoch_loss = 0
             val_epoch_loss = 0
 
-            for X_train, y_train in tqdm(self.train_loader, desc='Training', leave=False):
+            for X_train, y_train in tqdm(self.train_loader, desc=f'Training epoch {e}', leave=False):
                 # X_train, y_train = X_train.to(self.device), y_train.to(self.device)
                 train_preds = self.model(X_train)
                 loss_train = self.criterion(train_preds, y_train)
@@ -64,7 +67,7 @@ class Trainer():
                 self.optimizer.step()
 
             with torch.no_grad():
-                for X_val, y_val in tqdm(self.val_loader, desc='Validation', leave=False):
+                for X_val, y_val in tqdm(self.val_loader, desc=f'Validation epoch {e}', leave=False):
                     # X_val, y_val = X_val.to(self.device), y_val.to(self.device)
                     val_preds = self.model(X_val)
                     loss_val = self.criterion(val_preds, y_val)
