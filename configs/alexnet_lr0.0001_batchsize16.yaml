@@ -1,0 +1,17 @@
+model:
+    name: alexnet
+    experiment_name: alexnet_lr0.0001_batchsize16
+    num_classes: 45
+    pretrained: True
+
+train:
+    epochs: 5
+    batch_size: 16
+    lr: 0.0001
+    weight_decay: 0.0001
+    save_dir: experiments/alexnet_lr0.0001_batchsize16/
+    param_group: classifier
+
+data:
+    img_size: 224
+    

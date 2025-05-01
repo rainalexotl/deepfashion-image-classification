@@ -1,15 +1,15 @@
 model:
     name: resnet34
-    experiment_name: resnet34_baseline
+    experiment_name: resnet34_epochs15
     num_classes: 50
     pretrained: True
 
 train:
-    epochs: 5
+    epochs: 15
     batch_size: 16
     lr: 0.0001
     weight_decay: 0.0001
-    save_dir: experiments/resnet34_baseline/
+    save_dir: experiments/resnet34_epochs15/
     param_group: fc
 
 data:
