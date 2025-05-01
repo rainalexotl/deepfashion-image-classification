@@ -2,9 +2,11 @@
 */.DS_Store
 testimg.webp
 
-# notebooks for experimentation
+# experimentation
 notebooks/explore_transforms.ipynb
 notebooks/explore_balancing.ipynb
+notebooks/explore_bounding_box_cropping.ipynb
+experiments/*
 
 # python bytecode
 __pycache__/
