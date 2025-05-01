@@ -8,6 +8,7 @@ notebooks/explore_balancing.ipynb
 notebooks/explore_bounding_box_cropping.ipynb
 notebooks/explore_data_with_bbox.ipynb
 experiments/*
+testimg.png
 
 # python bytecode
 __pycache__/
