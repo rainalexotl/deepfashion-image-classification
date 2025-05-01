@@ -8,7 +8,7 @@ import torch
 from sklearn.metrics import classification_report
 
 from src.models.factory import get_model
-from src.data.dataset import get_dataloaders
+from src.data.v2.dataset import get_dataloaders
 
 ROOT = Path(__file__).resolve().parents[2]
 

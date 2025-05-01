@@ -6,6 +6,7 @@ testimg.webp
 notebooks/explore_transforms.ipynb
 notebooks/explore_balancing.ipynb
 notebooks/explore_bounding_box_cropping.ipynb
+notebooks/explore_data_with_bbox.ipynb
 experiments/*
 
 # python bytecode

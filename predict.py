@@ -6,7 +6,7 @@ import yaml
 from PIL import Image
 import torch
 
-from src.data.dataset import get_transform
+from src.data.v2.dataset import get_transforms
 from src.models.factory import get_model
 
 ROOT = Path(__file__).resolve().parent
@@ -32,21 +32,22 @@ def main():
         return
     
     try:
-        img = Image.open(args.inference_file)
+        img = Image.open(args.inference_file).convert('RGB')
     except Exception as error:
         print(error)
         return
 
-    transform = get_transform(config)
+    _, transform = get_transforms(config)
     img = transform(img)
 
     model = get_model(config)
     checkpoint = torch.load(os.path.join(ROOT, args.checkpoint))
     model.load_state_dict(checkpoint['model_state_dict'])
+
     
     model.eval()
     with torch.no_grad():
-        pred = model(img)
+        pred = model(img.unsqueeze(0)) # add batch dimension
 
     print(f"Predicted class: {pred.argmax(dim=1).item()}")
     if args.topk:

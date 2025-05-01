@@ -6,7 +6,7 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-from src.data.dataset import get_dataloaders
+from src.data.v2.dataset import get_dataloaders
 from src.models.factory import get_model
 from src.utils.logger import ExperimentLogger
 
