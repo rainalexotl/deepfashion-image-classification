@@ -49,7 +49,7 @@ python3 eval.py --config config_filename.yaml --checkpoint path/to/checkpoint.pt
 ```
 Add `-s` to save evaluation results. This will save the classification report to a json and the predictions (true vs pred) as a csv in `experiments/experiment_name/predictions/`
 
-## Run inference an image
+## Run inference on an image
 ```
 python3 predict.py path/to/image_file --config config_filename.yaml --checkpoint path/to/checkpoint.pt [--topk 5]
 ```
