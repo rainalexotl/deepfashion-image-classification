@@ -1,0 +1,8 @@
+torch
+Pillow
+tqdm
+scikit-learn
+transformers[torch]
+evaluate
+matplotlib
+seaborn

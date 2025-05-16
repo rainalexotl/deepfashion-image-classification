@@ -15,11 +15,11 @@ class DeepFashionDataset(Dataset):
     def __init__(self, split='train', data_root=DATA_ROOT, transform=None, 
                  class_filename='list_category_cloth.txt',
                  downsample=False, max_samples_per_class=MAX_SAMPLES_PER_CLASS):
-        with open(os.path.join(data_root, f'{split}.txt')) as f:
+        with open(os.path.join(ROOT, data_root, f'{split}.txt')) as f:
             self.img_paths = [line.strip() for line in f]
-        with open(os.path.join(data_root, f'{split}_cate.txt')) as f:
+        with open(os.path.join(ROOT, data_root, f'{split}_cate.txt')) as f:
             self.labels = [int(line.strip()) for line in f]
-        with open(os.path.join(data_root, f'{split}_bbox.txt')) as f:
+        with open(os.path.join(ROOT, data_root, f'{split}_bbox.txt')) as f:
             self.bboxes = [self._parse_coords(line.strip().split(' ')) for line in f]
         
         # Apply downsampling if requested
@@ -37,7 +37,7 @@ class DeepFashionDataset(Dataset):
                 category = line.strip().split()[0]  # get first word
                 self.classes.append(category)
 
-        self.data_root = data_root
+        self.data_root = os.path.join(ROOT, DATA_ROOT)
         self.transform = transform
 
     def _downsample_by_class_metadata(self, labels, max_samples_per_class=MAX_SAMPLES_PER_CLASS):

@@ -1,6 +1,6 @@
 .DS_Store
 */.DS_Store
-testimg.webp
+.vscode
 
 # experimentation
 notebooks/explore_transforms.ipynb
