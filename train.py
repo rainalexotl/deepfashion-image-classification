@@ -3,10 +3,19 @@ from pathlib import Path
 import argparse
 import yaml
 
+import torch
+import numpy as np
+import random
+
 from src.train.trainer import Trainer
+from src.train.trainer import HFTrainer
 
 ROOT = Path(__file__).resolve().parents[0]
 CONFIG_ROOT = 'configs'
+
+torch.manual_seed(42)
+np.random.seed(42)
+random.seed(42)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -25,11 +34,17 @@ def main():
         print(error)
         return
     
-    trainer = Trainer(config, checkpoint_path=args.checkpoint)
+    if 'huggingface' in config['model'].get('source', ''):
+        trainer = HFTrainer(config, checkpoint_path=args.checkpoint)
+    elif 'timm' in config['model'].get('source', ''):
+        trainer = None
+    else:
+        trainer = Trainer(config, checkpoint_path=args.checkpoint)
+
     try:
         trainer.train()
     except KeyboardInterrupt:
-        checkpoint_path = os.path.join(config['train']['save_dir'], 'checkpoints', 'last_model.pt')
+        checkpoint_path = os.path.join(config['experiment']['save_root'], config['experiment']['name'], 'checkpoints', 'last_model.pt')
         print(f"\nTraining Interrupted. Saving checkpoint to {checkpoint_path}")
         trainer.curr_epoch -= 1 # to restart back at interrupted epoch
         trainer.save_checkpoint(checkpoint_path)

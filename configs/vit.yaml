@@ -1,0 +1,41 @@
+model:
+    source: huggingface
+    type: vit
+    name: google/vit-base-patch16-224
+    pretrained: True
+    num_classes: 20
+training:
+    epochs: 5
+    batch_size: 16
+    learning_rate: 0.00005
+    patience: 1
+
+experiment:
+    name: vit
+    save_root: experiments/
+
+data:
+    img_size: 224
+    downsample: True
+    max_samples: 500
+    include_labels:
+        - Jumpsuit
+        - Top
+        - Bomber
+        - Skirt
+        - Tee
+        - Sweatpants
+        - Flannel
+        - Tank
+        - Turtleneck
+        - Jersey
+        - Blouse
+        - Kaftan
+        - Jeggings
+        - Shirtdress
+        - Sarong
+        - Jacket
+        - Leggings
+        - Nightdress
+        - Sweatshorts
+        - Coverup
