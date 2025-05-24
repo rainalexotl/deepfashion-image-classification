@@ -191,7 +191,15 @@ class HFTrainer():
                             log_history[i+1]['eval_accuracy'])
             
         self.logger.save()
-
+        best_model = trainer.state.best_model_checkpoint
+        print(f"Best checkpoint was saved at: {trainer.state.best_model_checkpoint}")
+        if self.config['model'].get('type', '') == 'vit':
+            model = ViTForImageClassification.from_pretrained(best_model)
+        elif self.config['model'].get('type', '') == 'swin':
+            model = SwinForImageClassification.from_pretrained(best_model)
+        else:
+            raise ValueError("Missing model 'type' in config file. Should be swin or vit")
+        torch.save(model.state_dict(), os.path.join(self.save_dir, f"{self.config['experiment']['name']}_best_model.pt"))
 
 class TimmTrainer():
     def __init__():
