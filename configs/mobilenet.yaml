@@ -1,0 +1,43 @@
+model:
+    source: timm
+    type: mobilenet
+    name: mobilenetv3_large_100.ra_in1k
+    pretrained: True
+    num_classes: 20
+
+train:
+    epochs: 20
+    batch_size: 16
+    learning_rate: 0.0001
+    weight_decay: 0.0001
+    patience: 1
+
+experiment:
+    name: mobilenet
+    save_root: experiments/
+
+data:
+    img_size: 224
+    downsample: True
+    max_samples: 500
+    include_labels:
+        - Jumpsuit
+        - Top
+        - Bomber
+        - Skirt
+        - Tee
+        - Sweatpants
+        - Flannel
+        - Tank
+        - Turtleneck
+        - Jersey
+        - Blouse
+        - Kaftan
+        - Jeggings
+        - Shirtdress
+        - Sarong
+        - Jacket
+        - Leggings
+        - Nightdress
+        - Sweatshorts
+        - Coverup
