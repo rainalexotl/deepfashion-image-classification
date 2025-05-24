@@ -110,6 +110,8 @@ Dataset wrapper for huggingface models
 class HFDatasetWrapper(Dataset):
     def __init__(self, dataset):
         self.dataset = dataset
+        self.classes = dataset.classes
+        self.labels = dataset.labels
 
     def __len__(self):
         return len(self.dataset)
@@ -126,7 +128,13 @@ def get_transforms(config, processor=None):
 
     # Resize and crop
     if processor:
-        size = (processor.size['height'], processor.size['width'])
+        if config['model'].get('source', '') == 'timm':
+            _, height, width = processor['input_size']
+            size = (height, width)
+        elif config['model'].get('source', '') == 'huggingface':
+            size = (processor.size['height'], processor.size['width'])
+        else: 
+            raise ValueError(f"Unsupported model source: {config['model']['source']}")
     else:
         size = config['data']['img_size']
 
@@ -142,7 +150,13 @@ def get_transforms(config, processor=None):
 
     # Only normalize if processor is provided
     if processor:
-        train_transform_steps.append(T.Normalize(mean=processor.image_mean, std=processor.image_std))
+        if config['model'].get('source', '') == 'timm':
+            mean = processor['mean']
+            std = processor['std']
+        elif config['model'].get('source', '') == 'huggingface':
+            mean = processor.image_mean
+            std = processor.image_std
+        train_transform_steps.append(T.Normalize(mean=mean, std=std))
     elif config['model']['name'] in ['alexnet', 'resnet34']:
         train_transform_steps.append(T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]))
 
@@ -153,7 +167,11 @@ def get_transforms(config, processor=None):
     val_transform_steps = [T.ToImage()]
 
     if processor:
-        size = (processor.size['height'], processor.size['width'])
+        if config['model'].get('source', '') == 'timm':
+            _, height, width = processor['input_size']
+            size = (height, width)
+        elif config['model'].get('source', '') == 'huggingface':
+            size = (processor.size['height'], processor.size['width'])
     else:
         size = config['data']['img_size']
 
@@ -164,7 +182,13 @@ def get_transforms(config, processor=None):
     ])
 
     if processor:
-        val_transform_steps.append(T.Normalize(mean=processor.image_mean, std=processor.image_std))
+        if config['model'].get('source', '') == 'timm':
+            mean = processor['mean']
+            std = processor['std']
+        elif config['model'].get('source', '') == 'huggingface':
+            mean = processor.image_mean
+            std = processor.image_std
+        val_transform_steps.append(T.Normalize(mean=mean, std=std))
     elif config['model']['name'] in ['alexnet', 'resnet34']:
         val_transform_steps.append(T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]))
 
@@ -173,14 +197,13 @@ def get_transforms(config, processor=None):
     return train_transform, val_transform
 
 def build_weighted_sampler(dataset, max_samples_per_class=MAX_SAMPLES_PER_CLASS):
-    class_counts = Counter(dataset.labels)
-    class_sample_counts = np.array([class_counts[i] for i in sorted(class_counts)])
-    weights = 1. / class_sample_counts
-    sample_weights = np.array([weights[sorted(class_counts).index(label)] for label in dataset.labels])
+    label_counts = Counter(dataset.labels)
+    label_weights = {label: 1.0 / count for label, count in label_counts.items()}
+    sample_weights = [label_weights[label] for label in dataset.labels]
 
     sampler = WeightedRandomSampler(
         weights=sample_weights,
-        num_samples=len(class_counts) * max_samples_per_class,
+        num_samples=len(label_counts) * max_samples_per_class,
         replacement=True
     )
 
@@ -199,7 +222,7 @@ def get_datasets(config, processor=None, train=True):
                                                max_samples_per_class=max_samples, include_labels=include_labels)
             val_dataset = DeepFashionDataset('val', transform=val_transform, include_labels=include_labels)
 
-            if config['model']['source'] in ['huggingface', 'timm']:
+            if config['model'].get('source', '') == 'huggingface':
                 train_dataset = HFDatasetWrapper(train_dataset)
                 val_dataset = HFDatasetWrapper(val_dataset)
 
@@ -207,7 +230,7 @@ def get_datasets(config, processor=None, train=True):
         else:
             test_dataset = DeepFashionDataset('test', transform=val_transform, include_labels=include_labels)
 
-            if config['model']['source'] in ['huggingface', 'timm']:
+            if config['model'].get('source', '') == 'huggingface':
                 test_dataset = HFDatasetWrapper(test_dataset)
 
             return test_dataset
