@@ -154,11 +154,11 @@ class HFTrainer():
             eval_strategy='epoch',
             save_strategy='epoch',
             save_total_limit=2, # save last
-            learning_rate=config['training']['learning_rate'],
-            per_device_train_batch_size=config['training']['batch_size'],
-            per_device_eval_batch_size=config['training']['batch_size'],
+            learning_rate=config['train']['learning_rate'],
+            per_device_train_batch_size=config['train']['batch_size'],
+            per_device_eval_batch_size=config['train']['batch_size'],
             # This will pick up from the last checkpoint (e.g., epoch 3) and train up to the desired number of epochs
-            num_train_epochs=config['training']['epochs'],
+            num_train_epochs=config['train']['epochs'],
             logging_strategy='epoch',
             load_best_model_at_end=True, # save best
             metric_for_best_model='loss'
@@ -179,7 +179,7 @@ class HFTrainer():
             train_dataset=self.train_dataset,
             eval_dataset=self.val_dataset,
             compute_metrics=self._compute_acc,
-            callbacks=[EarlyStoppingCallback(early_stopping_patience=self.config['training']['patience'])]
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=self.config['train']['patience'])]
         )
         trainer.train(resume_from_checkpoint=self.checkpoint_path)
 

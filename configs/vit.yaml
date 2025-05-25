@@ -4,7 +4,7 @@ model:
     name: google/vit-base-patch16-224
     pretrained: True
     num_classes: 20
-training:
+train:
     epochs: 5
     batch_size: 16
     learning_rate: 0.00005

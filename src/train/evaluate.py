@@ -70,7 +70,7 @@ def hf_evaluate(config, checkpoint_path, save_results=True):
 
     test_dataset = get_datasets(config, processor, train=False)
     id2label = {i: label for i, label in enumerate(test_dataset.classes)}
-    test_loader = DataLoader(test_dataset, batch_size=config['training']['batch_size'], shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=config['train']['batch_size'], shuffle=False)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f"Evaluating on {device}")

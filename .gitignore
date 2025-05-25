@@ -8,6 +8,8 @@ notebooks/explore_balancing.ipynb
 notebooks/explore_bounding_box_cropping.ipynb
 notebooks/explore_data_with_bbox.ipynb
 notebooks/sanity_data_filter.ipynb
+notebooks/sanity_sampler.ipynb
+notebooks/torchscript_export.ipynb
 experiments/*
 testimg.png
 
