@@ -83,8 +83,8 @@ Results are automatically saved to the `experiments/` directory. Example outputs
 - `confusion_matrix.png`: Visual confusion matrix
 - *Sample predictions and images:* Use `predict.py` for inference on custom images.
 
-> #### Prediction Example:  
-> ![Prediction results on a top](prediction_example.png)  
+> #### Prediction Example:   
+> <img src="prediction_example.png" width="250">
 
 ## Installation and Usage
 
