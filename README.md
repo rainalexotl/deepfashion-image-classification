@@ -72,7 +72,6 @@ After training, models are evaluated on the test set using:
 - **Precision, Recall, F1-score** (macro and micro)
 - **Confusion Matrix** (visualization saved as PNG)
 - **Classification Report:** Saved as JSON and CSV (true vs predicted labels)
-- **(Optional) ROC curves:** For multi-class, per-class ROC can be added
 
 ## Results
 
