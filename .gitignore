@@ -13,6 +13,9 @@ notebooks/torchscript_export.ipynb
 experiments/*
 testimg.png
 
+# deployment
+deployment/
+
 # python bytecode
 __pycache__/
 *.pyc
