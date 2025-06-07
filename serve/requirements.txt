@@ -1,2 +1,4 @@
 torch
 fastapi[standard]
+python-multipart
+transformers[torch]
