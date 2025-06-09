@@ -3,7 +3,7 @@ from pathlib import Path
 
 import torch
 import torchvision.transforms.v2 as T
-from transformers import SwinForImageClassification
+from transformers import SwinForImageClassification, AutoConfig
 from huggingface_hub import hf_hub_download
 
 LABELS = ['Jumpsuit', 'Top', 'Bomber', 'Skirt', 'Tee', 'Sweatpants', 'Flannel', 
@@ -22,8 +22,10 @@ MODEL_PATH = Path(
 )
 
 def load_model():
-    model = SwinForImageClassification.from_pretrained('microsoft/swin-base-patch4-window7-224', 
-                                                       num_labels=len(LABELS), ignore_mismatched_sizes=True)
+    config = AutoConfig.from_pretrained('microsoft/swin-base-patch4-window7-224')
+    config.num_labels = len(LABELS)
+    
+    model = SwinForImageClassification(config)
     state_dict = torch.load(MODEL_PATH)
     model.load_state_dict(state_dict)
     model.eval()
