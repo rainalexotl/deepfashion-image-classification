@@ -4,14 +4,22 @@ from pathlib import Path
 import torch
 import torchvision.transforms.v2 as T
 from transformers import SwinForImageClassification
-
-ROOT = Path(__file__).resolve().parents[1]
-MODEL_PATH = os.path.join(ROOT, 'experiments/swin/swin_best_model.pt')
-# print(MODEL_PATH)
+from huggingface_hub import hf_hub_download
 
 LABELS = ['Jumpsuit', 'Top', 'Bomber', 'Skirt', 'Tee', 'Sweatpants', 'Flannel', 
           'Tank', 'Turtleneck', 'Jersey', 'Blouse', 'Kaftan', 'Jeggings', 'Shirtdress', 
           'Sarong', 'Jacket', 'Leggings', 'Nightdress', 'Sweatshorts', 'Coverup']
+
+REPO_ID = 'rainalexotl/deepfashion-image-classification-swin'
+FILENAME = 'swin_best_model.pt'
+HF_TOKEN = os.getenv('HF_TOKEN') 
+MODEL_PATH = Path(
+    hf_hub_download(
+        repo_id=REPO_ID,
+        filename=FILENAME,
+        token=HF_TOKEN
+    )
+)
 
 def load_model():
     model = SwinForImageClassification.from_pretrained('microsoft/swin-base-patch4-window7-224', 
