@@ -10,16 +10,7 @@ LABELS = ['Jumpsuit', 'Top', 'Bomber', 'Skirt', 'Tee', 'Sweatpants', 'Flannel',
           'Tank', 'Turtleneck', 'Jersey', 'Blouse', 'Kaftan', 'Jeggings', 'Shirtdress', 
           'Sarong', 'Jacket', 'Leggings', 'Nightdress', 'Sweatshorts', 'Coverup']
 
-REPO_ID = 'rainalexotl/deepfashion-image-classification-swin'
-FILENAME = 'swin_best_model.pt'
-HF_TOKEN = os.getenv('HF_TOKEN') 
-MODEL_PATH = Path(
-    hf_hub_download(
-        repo_id=REPO_ID,
-        filename=FILENAME,
-        token=HF_TOKEN
-    )
-)
+MODEL_PATH = Path("swin_best_model.pt")
 
 def load_model():
     config = AutoConfig.from_pretrained('microsoft/swin-base-patch4-window7-224')
@@ -36,7 +27,6 @@ def make_prediction(model, image):
         T.ToImage(),
         T.Resize((224, 224)),
         T.CenterCrop((224, 224)),
-        T.ToTensor(),
         T.ToDtype(torch.float32, scale=True),
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])

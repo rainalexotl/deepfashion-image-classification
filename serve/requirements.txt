@@ -2,6 +2,7 @@ huggingface_hub
 torch
 torchvision
 pillow
-fastapi[standard]
+fastapi
+uvicorn
 python-multipart
 transformers[torch]
