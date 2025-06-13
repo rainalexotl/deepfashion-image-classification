@@ -19,3 +19,7 @@ deployment/
 # python bytecode
 __pycache__/
 *.pyc
+
+# model optimization
+convert_to_onnx.py
+swin_model.onnx
